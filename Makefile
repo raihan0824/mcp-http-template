@@ -1,4 +1,4 @@
-.PHONY: help install install-dev format lint type-check test clean run
+.PHONY: help install install-dev format lint type-check test clean run docker-build docker-run docker-dev docker-stop docker-logs
 
 # Default target
 help:
@@ -11,6 +11,13 @@ help:
 	@echo "  test         Run tests"
 	@echo "  clean        Clean up build artifacts"
 	@echo "  run          Run the MCP server"
+	@echo ""
+	@echo "Docker commands:"
+	@echo "  docker-build Build Docker image"
+	@echo "  docker-run   Run with docker-compose"
+	@echo "  docker-dev   Run development version with docker-compose"
+	@echo "  docker-stop  Stop Docker containers"
+	@echo "  docker-logs  Show Docker container logs"
 
 # Install production dependencies
 install:
@@ -49,3 +56,19 @@ clean:
 # Run the server
 run:
 	python -m mcp_server.main
+
+# Docker commands
+docker-build:
+	docker build -t mcp-http-template .
+
+docker-run:
+	docker-compose up -d
+
+docker-dev:
+	docker-compose --profile dev up -d mcp-server-dev
+
+docker-stop:
+	docker-compose down
+
+docker-logs:
+	docker-compose logs -f

@@ -66,6 +66,60 @@ make lint
 
 # Run type checking
 make type-check
+
+# Docker commands
+make docker-build    # Build Docker image
+make docker-run      # Run with docker-compose
+make docker-dev      # Run development version
+make docker-stop     # Stop containers
+make docker-logs     # View logs
+```
+
+## Docker Deployment
+
+### Quick Start with Docker
+
+1. **Build and run with Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Or build and run manually:**
+   ```bash
+   docker build -t mcp-http-template .
+   docker run -p 3000:3000 mcp-http-template
+   ```
+
+### Docker Features
+
+- ✅ **Non-root user**: Runs as `mcpuser` (UID 1000) for security
+- ✅ **Multi-stage build**: Optimized image size and security
+- ✅ **Health checks**: Built-in container health monitoring  
+- ✅ **Environment variables**: Full configuration via env vars
+- ✅ **Security hardened**: No new privileges, minimal attack surface
+
+### Docker Environment Variables
+
+All configuration can be done via environment variables:
+
+```bash
+docker run -p 3000:3000 \
+  -e MCP_SERVER_NAME="My Custom Server" \
+  -e MCP_LOG_LEVEL="DEBUG" \
+  -e MCP_PORT=3000 \
+  mcp-http-template
+```
+
+### Development with Docker
+
+For development with live code reloading:
+
+```bash
+# Run development container with volume mounts
+docker-compose --profile dev up -d mcp-server-dev
+
+# View logs
+docker-compose logs -f mcp-server-dev
 ```
 
 ## Configuration

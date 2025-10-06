@@ -1,0 +1,15 @@
+# Docker Compose override file for local development
+# This file is automatically loaded by docker-compose and overrides settings in docker-compose.yml
+# Copy this to docker-compose.override.yml and modify as needed
+
+version: '3.8'
+
+services:
+  mcp-server:
+    # Override for development
+    environment:
+      - MCP_LOG_LEVEL=DEBUG
+    # Add volume mounts for development (uncomment if needed)
+    # volumes:
+    #   - ./mcp_server:/app/mcp_server:ro
+    #   - ./tests:/app/tests:ro
