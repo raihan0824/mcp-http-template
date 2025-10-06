@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mcp-server.fullname" . }}
+  labels:
+    {{- include "mcp-server.labels" . | nindent 4 }}
+data:
+  server-name: {{ .Values.config.serverName | quote }}
+  host: {{ .Values.config.host | quote }}
+  port: {{ .Values.config.port | quote }}
+  log-level: {{ .Values.config.logLevel | quote }}
+  enable-tools: {{ .Values.config.enableTools | quote }}
+  enable-resources: {{ .Values.config.enableResources | quote }}
+  enable-prompts: {{ .Values.config.enablePrompts | quote }}

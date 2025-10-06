@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcp-server-config
+  namespace: mcp-server
+  labels:
+    app.kubernetes.io/name: mcp-server
+    app.kubernetes.io/component: config
+data:
+  server-name: "MCP HTTP Template Server"
+  host: "0.0.0.0"
+  port: "3000"
+  log-level: "INFO"
+  enable-tools: "true"
+  enable-resources: "true"
+  enable-prompts: "true"

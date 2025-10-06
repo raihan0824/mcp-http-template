@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mcp-server.fullname" . }}
+  labels:
+    {{- include "mcp-server.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mcp-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "mcp-server.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mcp-server.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.port }}
+              protocol: TCP
+          env:
+            - name: MCP_SERVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: server-name
+            - name: MCP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: host
+            - name: MCP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: port
+            - name: MCP_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: log-level
+            - name: MCP_ENABLE_TOOLS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: enable-tools
+            - name: MCP_ENABLE_RESOURCES
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: enable-resources
+            - name: MCP_ENABLE_PROMPTS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "mcp-server.fullname" . }}
+                  key: enable-prompts
+          {{- if .Values.healthCheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: http
+              httpHeaders:
+                - name: Accept
+                  value: "application/json, text/event-stream"
+            initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthCheck.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: http
+              httpHeaders:
+                - name: Accept
+                  value: "application/json, text/event-stream"
+            initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            successThreshold: {{ .Values.healthCheck.successThreshold }}
+            failureThreshold: {{ .Values.healthCheck.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,15 @@
+apiVersion: v2
+name: mcp-server
+description: A Helm chart for MCP HTTP Template Server
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - mcp
+  - model-context-protocol
+  - http
+  - server
+  - api
+home: https://github.com/raihan0824/mcp-http-template.git
+sources:
+  - https://github.com/raihan0824/mcp-http-template
