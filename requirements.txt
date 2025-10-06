@@ -1,0 +1,16 @@
+# Core MCP dependencies
+mcp==1.16.0
+# HTTP server dependencies
+starlette==0.48.0
+uvicorn>=0.23.0
+click>=8.0.0
+anyio>=3.7.0
+pydantic>=2.0.0
+
+# Development dependencies (optional)
+# Uncomment the following lines for development
+# black>=23.0.0
+# isort>=5.12.0
+# mypy>=1.5.0
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
